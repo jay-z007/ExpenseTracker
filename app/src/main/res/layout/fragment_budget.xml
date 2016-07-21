@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/budget_card"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    android:minHeight="100sp"
+    card_view:cardElevation="5dp"
+    card_view:cardCornerRadius="4dp"
+    >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="4dp"
+        >
+
+        <TextView
+            android:textAlignment="center"
+            android:id="@+id/text_view_budget_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="7dp"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textAppearance="?attr/textAppearanceListItem" />
+
+        <TextView
+            android:id="@+id/text_view_budget_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="7dp"
+            android:textAppearance="?attr/textAppearanceListItem"
+            android:layout_below="@+id/text_view_budget_title"
+            />
+
+        <TextView
+            android:id="@+id/text_view_budget_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="7dp"
+            android:textAppearance="?attr/textAppearanceListItem"
+            android:layout_below="@+id/text_view_budget_description"
+            />
+
+        <TextView
+            android:id="@+id/text_view_budget_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="7dp"
+            android:textAppearance="?attr/textAppearanceListItem"
+            android:layout_below="@+id/text_view_budget_amount"
+            />
+
+        <TextView
+            android:id="@+id/text_view_budget_saving"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="7dp"
+            android:textAppearance="?attr/textAppearanceListItem"
+            android:layout_below="@+id/text_view_budget_date"
+            />
+
+    </RelativeLayout>
+
+</android.support.v7.widget.CardView>
+
