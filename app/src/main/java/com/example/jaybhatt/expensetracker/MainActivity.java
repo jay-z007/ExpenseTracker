@@ -103,17 +103,17 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        /*if(requestCode == REQUEST_NEW_BUDGET && resultCode == RESULT_OK)
-            tabLayout.getTabAt(REQUEST_NEW_BUDGET);
 
-        if(requestCode == REQUEST_NEW_EXPENSE && resultCode == RESULT_OK)
-            tabLayout.getTabAt(REQUEST_NEW_EXPENSE);
-*/
-        tabLayout.removeAllTabs();
+        /*tabLayout.removeAllTabs();
         mSectionsPagerAdapter.notifyDataSetChanged();
         mViewPager.setAdapter(mSectionsPagerAdapter);
-        tabLayout.setupWithViewPager(mViewPager);
+        tabLayout.setupWithViewPager(mViewPager);*/
 
+        if (requestCode == REQUEST_NEW_BUDGET && resultCode == RESULT_OK)
+            tabLayout.getTabAt(REQUEST_NEW_BUDGET);
+
+        if (requestCode == REQUEST_NEW_EXPENSE && resultCode == RESULT_OK)
+            tabLayout.getTabAt(REQUEST_NEW_EXPENSE);
     }
 
     @Override

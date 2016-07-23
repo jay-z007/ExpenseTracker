@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -16,9 +15,7 @@ import android.view.ViewGroup;
 import com.afollestad.materialcab.MaterialCab;
 import com.example.jaybhatt.expensetracker.Model.Budget;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 
 /**
  * A fragment representing a list of Items.
@@ -34,6 +31,7 @@ public class BudgetFragment extends Fragment implements View.OnLongClickListener
     private MyBudgetRecyclerViewAdapter adapter;
     private static final String CAB = "context_action_bar";
     private MaterialCab cab;
+    private List<Budget> budgets;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -65,7 +63,7 @@ public class BudgetFragment extends Fragment implements View.OnLongClickListener
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_budget_list, container, false);
-        List<Budget> budgets = Budget.listAll(Budget.class);
+        budgets = Budget.listAll(Budget.class);
         // Set the adapter
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
@@ -83,8 +81,11 @@ public class BudgetFragment extends Fragment implements View.OnLongClickListener
 
     @Override
     public void onResume() {
-        adapter.notifyDataSetChanged();
         super.onResume();
+        budgets.removeAll(budgets);
+        budgets.addAll(Budget.listAll(Budget.class));
+        adapter.notifyItemRangeChanged(0, budgets.size());
+        //adapter.notifyItemInserted(0);
     }
 
     MaterialCab.Callback callback = new MaterialCab.Callback() {

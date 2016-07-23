@@ -3,31 +3,19 @@ package com.example.jaybhatt.expensetracker;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.ActionMode;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Toast;
 
 import com.afollestad.materialcab.MaterialCab;
 import com.example.jaybhatt.expensetracker.Model.Expenditure;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
-
-import static android.support.v7.cardview.R.color.*;
-import static com.orm.SugarRecord.delete;
 
 /**
  * A fragment representing a list of Items.
@@ -146,12 +134,9 @@ public class ExpenditureFragment extends Fragment implements View.OnLongClickLis
     @Override
     public void onResume() {
         super.onResume();
-        Toast.makeText(getActivity(), "OnResume", Toast.LENGTH_LONG).show();
-        System.out.println("initial " + adapter.getItemCount());
-        expenses = Expenditure.listAll(Expenditure.class);
-        adapter.notifyItemInserted(adapter.getItemCount() + 1);
-        adapter.notifyItemRangeChanged(0, adapter.getItemCount()+1);
-        System.out.println("post " + adapter.getItemCount());
+        expenses.removeAll(expenses);
+        expenses.addAll(Expenditure.listAll(Expenditure.class));
+        adapter.notifyItemRangeChanged(0, expenses.size());
     }
 
     @Override
@@ -208,7 +193,7 @@ public class ExpenditureFragment extends Fragment implements View.OnLongClickLis
         void onListFragmentInteraction(Expenditure item);
     }
 
-    private class SelectionAdapter extends ArrayAdapter<String> {
+    /*private class SelectionAdapter extends ArrayAdapter<String> {
 
         private HashMap<Integer, Boolean> mSelection = new HashMap<Integer, Boolean>();
 
@@ -251,5 +236,5 @@ public class ExpenditureFragment extends Fragment implements View.OnLongClickLis
             }
             return v;
         }
-    }
+    }*/
 }
