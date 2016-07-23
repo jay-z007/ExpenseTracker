@@ -8,6 +8,8 @@ import android.widget.TextView;
 
 import com.example.jaybhatt.expensetracker.BudgetFragment.OnListFragmentInteractionListener;
 import com.example.jaybhatt.expensetracker.Model.Budget;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,12 +21,32 @@ public class MyBudgetRecyclerViewAdapter extends RecyclerView.Adapter<MyBudgetRe
 
     private final List<Budget> mValues;
     private final OnListFragmentInteractionListener mListener;
+    private ArrayList<Integer> mSelected;
     private BudgetFragment mBudgetFragment;
 
     public MyBudgetRecyclerViewAdapter(List<Budget> items, OnListFragmentInteractionListener listener, BudgetFragment budgetFragment) {
         mValues = items;
         mListener = listener;
         mBudgetFragment = budgetFragment;
+        mSelected = new ArrayList<>();
+    }
+
+    public void toggleSelected(int index) {
+        final boolean newState = !mSelected.contains(index);
+        if (newState)
+            mSelected.add(index);
+        else
+            mSelected.remove((Integer) index);
+        notifyItemChanged(index);
+    }
+
+    public int getSelectedCount() {
+        return mSelected.size();
+    }
+
+    public void clearSelected() {
+        mSelected.clear();
+        notifyDataSetChanged();
     }
 
     @Override
@@ -36,23 +58,16 @@ public class MyBudgetRecyclerViewAdapter extends RecyclerView.Adapter<MyBudgetRe
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
+        holder.mView.setActivated(mSelected.contains(position));
+        holder.mView.setTag("item:" + position);
         holder.mItem = mValues.get(position);
         holder.mTitleView.setText(mValues.get(position).getTitle());
         holder.mDescriptionView.setText(mValues.get(position).getDescription());
         holder.mAmountView.setText(String.format("%f", mValues.get(position).getAmount()));
         holder.mDateView.setText(mValues.get(position).getDate().toString());
         holder.mSavingView.setText(String.format("%f", mValues.get(position).getSaving()));
-
-        holder.mView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (null != mListener) {
-                    // Notify the active callbacks interface (the activity, if the
-                    // fragment is attached to one) that an item has been selected.
-                    mListener.onListFragmentInteraction(holder.mItem);
-                }
-            }
-        });
+        holder.mView.setOnLongClickListener(mBudgetFragment);
+        holder.mView.setOnClickListener(mBudgetFragment);
     }
 
     @Override

@@ -1,19 +1,15 @@
 package com.example.jaybhatt.expensetracker;
 
 import android.support.v7.widget.RecyclerView;
-import android.view.ActionMode;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.jaybhatt.expensetracker.ExpenditureFragment.OnListFragmentInteractionListener;
 import com.example.jaybhatt.expensetracker.Model.Expenditure;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,12 +21,32 @@ public class MyExpenditureRecyclerViewAdapter extends RecyclerView.Adapter<MyExp
 
     private final List<Expenditure> mValues;
     private final OnListFragmentInteractionListener mListener;
+    private ArrayList<Integer> mSelected;
     private ExpenditureFragment mExpenditureFragment;
 
     public MyExpenditureRecyclerViewAdapter(List<Expenditure> items, OnListFragmentInteractionListener listener, ExpenditureFragment expenditureFragment) {
         mValues = items;
         mListener = listener;
         mExpenditureFragment = expenditureFragment;
+        mSelected = new ArrayList<>();
+    }
+
+    public void toggleSelected(int index) {
+        final boolean newState = !mSelected.contains(index);
+        if (newState)
+            mSelected.add(index);
+        else
+            mSelected.remove((Integer) index);
+        notifyItemChanged(index);
+    }
+
+    public int getSelectedCount() {
+        return mSelected.size();
+    }
+
+    public void clearSelected() {
+        mSelected.clear();
+        notifyDataSetChanged();
     }
 
     @Override
@@ -42,23 +58,16 @@ public class MyExpenditureRecyclerViewAdapter extends RecyclerView.Adapter<MyExp
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
+        holder.mView.setActivated(mSelected.contains(position));
+        holder.mView.setTag("item:" + position);
         holder.mItem = mValues.get(position);
         holder.mDescriptionView.setText(mValues.get(position).getDescription());
         holder.mAmountView.setText(String.format("%f", mValues.get(position).getAmount()));
         holder.mDateView.setText(mValues.get(position).getDate());
         holder.mCategoryView.setText(mValues.get(position).getCategory().name());
         holder.mTypeView.setText(mValues.get(position).getExpenseType().name());
-
-        holder.mView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (null != mListener) {
-                    // Notify the active callbacks interface (the activity, if the
-                    // fragment is attached to one) that an item has been selected.
-                    mListener.onListFragmentInteraction(holder.mItem);
-                }
-            }
-        });
+        holder.mView.setOnLongClickListener(mExpenditureFragment);
+        holder.mView.setOnClickListener(mExpenditureFragment);
     }
 
     @Override

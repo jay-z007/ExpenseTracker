@@ -1,9 +1,9 @@
 package com.example.jaybhatt.expensetracker;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import com.afollestad.materialcab.MaterialCab;
 import com.example.jaybhatt.expensetracker.Model.Budget;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
 /**
@@ -23,7 +24,7 @@ import java.util.List;
  * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
  * interface.
  */
-public class BudgetFragment extends Fragment implements View.OnLongClickListener {
+public class BudgetFragment extends Fragment implements View.OnLongClickListener, MyCallback, View.OnClickListener {
 
     // TODO: Customize parameter argument names
     // TODO: Customize parameters
@@ -68,6 +69,7 @@ public class BudgetFragment extends Fragment implements View.OnLongClickListener
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
             RecyclerView recyclerView = (RecyclerView) view;
+            recyclerView.setItemAnimator(new DefaultItemAnimator());
             //if (mColumnCount <= 1) {
                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
             /*} else {
@@ -79,19 +81,20 @@ public class BudgetFragment extends Fragment implements View.OnLongClickListener
         return view;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        budgets.removeAll(budgets);
-        budgets.addAll(Budget.listAll(Budget.class));
-        adapter.notifyItemRangeChanged(0, budgets.size());
-        //adapter.notifyItemInserted(0);
-    }
-
     MaterialCab.Callback callback = new MaterialCab.Callback() {
         @Override
         public boolean onCabCreated(MaterialCab cab, Menu menu) {
             // The CAB was started, return true to allow creation to continue.
+            if (menu.getClass().getSimpleName().equals("MenuBuilder")) {
+                try {
+                    Field field = menu.getClass().
+                            getDeclaredField("mOptionalIconsVisible");
+                    field.setAccessible(true);
+                    field.setBoolean(menu, true);
+                } catch (Exception ignored) {
+                    ignored.printStackTrace();
+                }
+            }
             return true;
         }
 
@@ -104,11 +107,49 @@ public class BudgetFragment extends Fragment implements View.OnLongClickListener
         @Override
         public boolean onCabFinished(MaterialCab cab) {
             // The CAB was finished, return true to allow destruction to continue.
-
+            adapter.clearSelected();
             return true;
         }
     };
 
+    @Override
+    public boolean onLongClick(View v) {
+        String[] tag = ((String) v.getTag()).split(":");
+        int index = Integer.parseInt(tag[1]);
+        onItemClicked(index, true);
+        return true;
+    }
+
+    @Override
+    public void onItemClicked(int index, boolean longClick) {
+        if (longClick || (cab != null && cab.isActive())) {
+            onIconClicked(index);
+        }
+    }
+
+    @Override
+    public void onIconClicked(int index) {
+        adapter.toggleSelected(index);
+        if (adapter.getSelectedCount() == 0) {
+            cab.finish();
+        } else if (!cab.isActive())
+            cab.start(callback);
+    }
+
+    @Override
+    public void onClick(View v) {
+        String[] tag = ((String) v.getTag()).split(":");
+        int index = Integer.parseInt(tag[1]);
+        onItemClicked(index, false);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        budgets.removeAll(budgets);
+        budgets.addAll(Budget.listAll(Budget.class));
+        adapter.notifyItemRangeChanged(0, budgets.size());
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -125,21 +166,6 @@ public class BudgetFragment extends Fragment implements View.OnLongClickListener
     public void onDetach() {
         super.onDetach();
         mListener = null;
-    }
-
-    @Override
-    public boolean onLongClick(View v) {
-        if(cab.isActive())
-        {
-            cab.finish();
-            return false;
-        }
-
-
-        cab.start(callback);
-        v.setSelected(true);
-        v.setBackgroundColor(Color.GREEN);
-        return true;
     }
 
     /**
