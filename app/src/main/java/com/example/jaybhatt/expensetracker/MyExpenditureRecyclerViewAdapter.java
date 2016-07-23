@@ -75,6 +75,10 @@ public class MyExpenditureRecyclerViewAdapter extends RecyclerView.Adapter<MyExp
         return mValues.size();
     }
 
+    public ArrayList<Integer> getSelectedItems() {
+        return mSelected;
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder //implements View.OnCreateContextMenuListener, MenuItem.OnMenuItemClickListener {
     {     public final View mView;
         public final TextView mDescriptionView;

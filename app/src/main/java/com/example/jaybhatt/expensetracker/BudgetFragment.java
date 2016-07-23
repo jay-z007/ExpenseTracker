@@ -16,6 +16,7 @@ import com.afollestad.materialcab.MaterialCab;
 import com.example.jaybhatt.expensetracker.Model.Budget;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -101,7 +102,14 @@ public class BudgetFragment extends Fragment implements View.OnLongClickListener
         @Override
         public boolean onCabItemClicked(MenuItem item) {
             // An item in the toolbar or overflow menu was tapped.
-            return true;
+            switch (item.getItemId()) {
+                case R.id.action_delete:
+                    deleteSelectedItems();
+                    cab.finish(); // Action picked, so close the CAB
+                    return true;
+                default:
+                    return false;
+            }
         }
 
         @Override
@@ -111,6 +119,18 @@ public class BudgetFragment extends Fragment implements View.OnLongClickListener
             return true;
         }
     };
+
+    private void deleteSelectedItems() {
+        Budget budget;
+        ArrayList<Integer> mSelected = adapter.getSelectedItems();
+        for (Integer i : mSelected) {
+            budget = Budget.findById(Budget.class, budgets.get(i).getId());
+            budget.delete();
+        }
+        budgets.removeAll(budgets);
+        budgets.addAll(Budget.listAll(Budget.class));
+        adapter.notifyItemRangeChanged(0, budgets.size());
+    }
 
     @Override
     public boolean onLongClick(View v) {

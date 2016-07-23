@@ -13,9 +13,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.afollestad.materialcab.MaterialCab;
+import com.example.jaybhatt.expensetracker.Model.Budget;
 import com.example.jaybhatt.expensetracker.Model.Expenditure;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -102,7 +104,14 @@ public class ExpenditureFragment extends Fragment implements View.OnLongClickLis
         @Override
         public boolean onCabItemClicked(MenuItem item) {
             // An item in the toolbar or overflow menu was tapped.
-            return true;
+            switch (item.getItemId()) {
+                case R.id.action_delete:
+                    deleteSelectedItems();
+                    cab.finish(); // Action picked, so close the CAB
+                    return true;
+                default:
+                    return false;
+            }
         }
 
         @Override
@@ -112,6 +121,18 @@ public class ExpenditureFragment extends Fragment implements View.OnLongClickLis
             return true; // allow destruction
         }
     };
+
+    private void deleteSelectedItems() {
+        Expenditure expenditure;
+        ArrayList<Integer> mSelected = adapter.getSelectedItems();
+        for (Integer i : mSelected) {
+            expenditure = Budget.findById(Expenditure.class, expenses.get(i).getId());
+            expenditure.delete();
+        }
+        expenses.removeAll(expenses);
+        expenses.addAll(Expenditure.listAll(Expenditure.class));
+        adapter.notifyItemRangeChanged(0, expenses.size());
+    }
 
     @Override
     public boolean onLongClick(View v) {
